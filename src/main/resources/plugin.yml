@@ -1,0 +1,14 @@
+name: Grappler
+version: '${project.version}'
+main: tech.asmussen.grappler.Grappler
+api-version: 1.19
+prefix: Grappling
+authors: [ BastianA ]
+description: A grappling gun in Minecraft!
+website: https://asmussen.studio
+
+commands:
+    grappler:
+        description: Get a grappling hook.
+        usage: /grappler
+        permission: grappler.use
