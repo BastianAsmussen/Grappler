@@ -2,6 +2,7 @@ package tech.asmussen.grappler;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -9,10 +10,13 @@ import tech.asmussen.grappler.commands.GetGrapplingGun;
 import tech.asmussen.grappler.events.FishEvent;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 public final class Grappler extends JavaPlugin {
+	
+	public static HashMap<Player, Integer> cooldowns = new HashMap<>();
 	
 	public static String colorize(String text) {
 		
@@ -39,6 +43,11 @@ public final class Grappler extends JavaPlugin {
 		return Arrays.asList(pureLore.split("\n"));
 	}
 	
+	public static int secondsToTicks(int seconds) {
+		
+		return seconds * 20;
+	}
+	
 	@Override
 	public void onEnable() {
 		
@@ -47,6 +56,9 @@ public final class Grappler extends JavaPlugin {
 		
 		// Register Events.
 		Bukkit.getPluginManager().registerEvents(new FishEvent(), this);
+		
+		// Register Tasks.
+		new Counter().runTaskTimer(this, 0, secondsToTicks(1));
 		
 		Bukkit.getConsoleSender().sendMessage("Grappler enabled!");
 	}

@@ -7,18 +7,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-
-import tech.asmussen.grappler.CooldownManager;
 import tech.asmussen.grappler.Grappler;
 
 import java.util.Objects;
 
 public class FishEvent implements Listener {
-	
-	public static void throwPlayer(Player player, Vector velocity) {
-		
-		player.setVelocity(velocity);
-	}
 	
 	@EventHandler
 	public void onFish(PlayerFishEvent event) {
@@ -27,29 +20,35 @@ public class FishEvent implements Listener {
 		final ItemStack neededItem = Grappler.getGrapplingGun();
 		
 		if (!playerItem.getType().equals(neededItem.getType()) && Objects.equals(playerItem.getItemMeta(), neededItem.getItemMeta()))
+			
 			return;
+		
+		Player player = event.getPlayer();
+		
+		if (Grappler.cooldowns.getOrDefault(player, 0) > 0) {
+			
+			player.sendMessage(Grappler.colorize("&cYou must wait " + Grappler.cooldowns.get(player) + (Grappler.cooldowns.get(player) == 1 ? " second" : " seconds") + " before you can use the grappling hook again!"));
+			
+			event.setCancelled(true);
+			
+			return;
+		}
 		
 		if (event.getState() == PlayerFishEvent.State.REEL_IN || event.getState() == PlayerFishEvent.State.IN_GROUND) { // If the rod is reeled in.
 			
-			double multiplier = event.getHook().getLocation().distance(event.getPlayer().getLocation());
+			double multiplier = event.getHook().getLocation().distance(player.getLocation());
 			
 			Vector hookVector = event.getHook().getLocation().toVector();
-			Vector playerVector = event.getPlayer().getLocation().toVector();
+			Vector playerVector = player.getLocation().toVector();
 			
 			double x = hookVector.getX() - playerVector.getX();
 			double z = hookVector.getZ() - playerVector.getZ();
 			
-			Vector velocity = new Vector(x, 1, z).normalize().multiply(multiplier);
+			player.setVelocity(new Vector(x, 1, z).normalize().multiply(multiplier));
 			
-			Player player = event.getPlayer();
+			Grappler.cooldowns.put(player, 2);
 			
-			CooldownManager cooldownManager = new CooldownManager();
-			
-			cooldownManager.setCooldown(player.getUniqueId(), 3);
-			
-			throwPlayer(player, velocity);
-			
-			player.playSound(hookVector.toLocation(player.getWorld()), Sound.ENTITY_GHAST_SHOOT, 1, 1);
+			player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SHOOT, 1, 10);
 		}
 	}
 }

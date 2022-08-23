@@ -15,7 +15,7 @@ public class GetGrapplingGun implements CommandExecutor {
 		
 		((Player) sender).getInventory().addItem(Grappler.getGrapplingGun());
 		
-		sender.sendMessage("You have been given a grappling gun!");
+		sender.sendMessage(Grappler.colorize("&aYou've been given a grappling gun!"));
 		
 		return true;
 	}

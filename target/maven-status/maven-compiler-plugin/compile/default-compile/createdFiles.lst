@@ -1,4 +1,4 @@
-tech\asmussen\grappler\CooldownManager.class
 tech\asmussen\grappler\Grappler.class
+tech\asmussen\grappler\Counter.class
 tech\asmussen\grappler\commands\GetGrapplingGun.class
 tech\asmussen\grappler\events\FishEvent.class
